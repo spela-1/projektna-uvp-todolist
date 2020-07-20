@@ -24,7 +24,23 @@ class Projekt():
             if naloga.id == id:
                 self.seznam_nalog.remove(naloga)
                 break
-            
+
+
+class Uporabnik():
+    def __init__(self):
+        self.seznam_projektov = []
+
+    def nov_projekt(self, ime):
+        for projekt in seznam_projektov:
+            if projekt.ime == ime:
+                return ValueError   #kle bi ubistu rada da mi vn vrze error ce je tak ime ze med projekti sam sm si gledko ta error zmisnla ker nevem kaj dejansko morm dt, da bo to kull
+        projekt = Projekt(self, ime)
+        self.seznam_projektov.append(projekt)
+
+    def izbrisi_projekt(self, ime):
+        for projekt in self.seznam_projektov:
+            if projekt.ime == ime:
+                self.seznam_projektov.remove(projekt)        
 
 
 

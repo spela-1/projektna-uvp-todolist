@@ -20,6 +20,17 @@ class Naloga():
         }
         return slovar
 
+    @classmethod
+    def iz_slovarja_nal(cls, nal_slovar):
+        tekst = nal_slovar['tekst']
+        datum = nal_slovar['datum']
+        ura = nal_slovar['ura']
+        opravljeno = nal_slovar['opravljeno']
+        prioriteta = nal_slovar['prioriteta']
+        id = nal_slovar['id']
+        naloga = cls(id, tekst, datum, ura, prioriteta)
+        naloga.opravljeno = opravljeno  
+        return naloga   
 
 
 class Projekt():
@@ -49,6 +60,21 @@ class Projekt():
             'seznam_nalog': nov
             }
         return slovar
+
+    @classmethod
+    def iz_slovarja_pr(cls, pr_slovar):
+        ime = pr_slovar['ime']
+        naslednji_id = pr_slovar['nasednji_id']
+        nov = []
+        for nal_slovar in pr_slovar['seznam_nalog']:
+            naloga = Naloga.iz_slovarja_nal(nal_slovar)
+            nov.append(naloga)
+        projekt = cls(ime)
+        projekt.seznam_nalog = nov
+        projekt.naslednji_id = naslednji_id
+        return projekt
+        
+
 
 
 
@@ -93,6 +119,10 @@ class Uporabnik():
         uporabnik = cls(ime, zasifrirano_geslo)
         nov = []
         for pr_slovar in slovar['seznam_projektov']:
+            projekt = Projekt.iz_slovarja_pr(pr_slovar)
+            nov.append(projekt)
+        uporabnik.seznam_projektov = nov
+        return uporabnik
             
 
             

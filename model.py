@@ -1,13 +1,15 @@
 import json
+import datetime
 
 class Naloga():
-    def __init__(self, id, tekst, datum=None , ura=None, prioriteta=None):
+    def __init__(self, id, id_pr, tekst, datum=None , ura=None, prioriteta=None):
         self.tekst = tekst
         self.datum = datum
         self.ura = ura
         self.opravljeno = False
         self.prioriteta = prioriteta
         self.id = id
+        self.id_pr = id_pr
     
     def v_seznam(self):
         slovar = {
@@ -21,14 +23,14 @@ class Naloga():
         return slovar
 
     @classmethod
-    def iz_slovarja_nal(cls, nal_slovar):
+    def iz_slovarja_nal(cls, nal_slovar, id_pr):
         tekst = nal_slovar['tekst']
         datum = nal_slovar['datum']
         ura = nal_slovar['ura']
         opravljeno = nal_slovar['opravljeno']
         prioriteta = nal_slovar['prioriteta']
         id = nal_slovar['id']
-        naloga = cls(id, tekst, datum, ura, prioriteta)
+        naloga = cls(id, id_pr, tekst, datum, ura, prioriteta)
         naloga.opravljeno = opravljeno  
         return naloga   
 
@@ -41,7 +43,7 @@ class Projekt():
         self.id = id
     
     def nova_naloga(self, tekst, datum=None , ura=None, prioriteta=None):
-        naloga = Naloga(self.naslednji_id, tekst, datum, ura, prioriteta)
+        naloga = Naloga(self.naslednji_id, self.id, tekst, datum, ura, prioriteta)
         self.seznam_nalog.append(naloga)
         self.naslednji_id += 1
 
@@ -71,7 +73,7 @@ class Projekt():
 
         nov = []
         for nal_slovar in pr_slovar['seznam_nalog']:
-            naloga = Naloga.iz_slovarja_nal(nal_slovar)
+            naloga = Naloga.iz_slovarja_nal(nal_slovar, id)
             nov.append(naloga)
         projekt = cls(id, ime)
         projekt.seznam_nalog = nov
@@ -115,7 +117,24 @@ class Uporabnik():
         for projekt in self.seznam_projektov:
             if projekt.ime == ime:
                 self.seznam_projektov.remove(projekt)
-                break    
+                break 
+    
+    def naloge_po_dnevih(self):
+        naloge = []
+        for projekt in self.seznam_projektov:
+            naloge.extend(projekt.seznam_nalog)
+
+        naloge.sort(key=lambda naloga: naloga.datum + naloga.ura)
+        return naloge
+
+    def naloge_po_dnevih_prihodnje(self):
+        naloge = self.naloge_po_dnevih()
+        danes = [datetime.datetime.now().year, datetime.datetime.now().month, datetime.datetime.now().day]
+        prihodnje_naloge = [naloga for naloga in naloge if naloga.datum >= danes]
+        
+        return prihodnje_naloge
+        
+        
     
     @classmethod
     def nalozi_stanje(cls, ime_datoteke):
@@ -145,7 +164,12 @@ class Uporabnik():
 u = Uporabnik("Špela", "Sc.1003067")
 u.nov_projekt("Tenis")
 u.seznam_projektov[0].nova_naloga("Timi", [2020,7,21], [16, 0], 5)
-print(u.shrani("test.json"))
+u.nov_projekt("Izpit za avto")
+u.seznam_projektov[1].nova_naloga("1 ura", [2020,8,6], [19, 38], 1)
+u.seznam_projektov[1].nova_naloga("glavna", [2020,8,6], [20, 0], 3)
+u.seznam_projektov[0].nova_naloga("Timi", [2020,8, 14], [16, 0], 4)
+#print(u.shrani("test.json"))
+print([naloga.v_seznam() for naloga in u.naloge_po_dnevih_prihodnje()])
 
 '''
 u2 = Uporabnik.nalozi_stanje("test.json")

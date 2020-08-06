@@ -1,5 +1,6 @@
 import json
 import datetime
+import os
 
 class Naloga():
     def __init__(self, id, id_pr, tekst, datum=None , ura=None, prioriteta=None):
@@ -41,6 +42,7 @@ class Projekt():
         self.seznam_nalog = []
         self.naslednji_id = 0
         self.id = id
+        self.deljeno_z = set()
     
     def nova_naloga(self, tekst, datum=None , ura=None, prioriteta=None):
         naloga = Naloga(self.naslednji_id, self.id, tekst, datum, ura, prioriteta)
@@ -53,6 +55,12 @@ class Projekt():
                 self.seznam_nalog.remove(naloga)
                 break
     
+    def deli_z(self, uporabnik):
+        self.deljeno_z.add(uporabnik)
+
+    def prenehaj_deljenje(self):
+        self.deljeno_z = set()
+
     def v_seznam(self):
         nov = []
         for naloga in self.seznam_nalog:
@@ -61,7 +69,8 @@ class Projekt():
             'ime': self.ime,
             'naslednji_id': self.naslednji_id,
             'seznam_nalog': nov,
-            'id': self.id
+            'id': self.id,
+            'deljeno_z': list(self.deljeno_z)
             }
         return slovar
 
@@ -70,6 +79,7 @@ class Projekt():
         ime = pr_slovar['ime']
         naslednji_id = pr_slovar['naslednji_id']
         id = pr_slovar['id']
+        deljeno_z = set(pr_slovar['deljeno_z'])
 
         nov = []
         for nal_slovar in pr_slovar['seznam_nalog']:
@@ -78,6 +88,7 @@ class Projekt():
         projekt = cls(id, ime)
         projekt.seznam_nalog = nov
         projekt.naslednji_id = naslednji_id
+        projekt.deljeno_z = deljeno_z
         return projekt
         
 
@@ -151,6 +162,22 @@ class Uporabnik():
         uporabnik.seznam_projektov = nov
         uporabnik.naslednji_id_pr = naslednji_id_pr
         return uporabnik
+
+
+class Seznam_uporabnikov():
+    def __init__(self, mapa):
+        if not os.path.isdir(mapa):
+            os.mkdir(mapa)
+        
+        self.uporabniki = self.nalozi_uporabnike(mapa)
+
+    def nalozi_uporabnike(self, mapa):
+        uporabniki = {}
+        for ime_datoteke in os.listdir(mapa):
+            uporabnik = Uporabnik.nalozi_stanje(os.path.join(mapa, ime_datoteke))
+            uporabniki[uporabnik.ime] = uporabnik
+
+        return uporabniki
             
 
             
@@ -163,15 +190,22 @@ class Uporabnik():
 
 u = Uporabnik("Špela", "Sc.1003067")
 u.nov_projekt("Tenis")
-u.seznam_projektov[0].nova_naloga("Timi", [2020,7,21], [16, 0], 5)
+u.seznam_projektov[0].nova_naloga("igra", [2020,7,21], [16, 0], 5)
 u.nov_projekt("Izpit za avto")
 u.seznam_projektov[1].nova_naloga("1 ura", [2020,8,6], [19, 38], 1)
 u.seznam_projektov[1].nova_naloga("glavna", [2020,8,6], [20, 0], 3)
-u.seznam_projektov[0].nova_naloga("Timi", [2020,8, 14], [16, 0], 4)
-#print(u.shrani("test.json"))
-print([naloga.v_seznam() for naloga in u.naloge_po_dnevih_prihodnje()])
+u.seznam_projektov[0].nova_naloga("servis", [2020,8, 14], [16, 0], 4)
+u.seznam_projektov[0].deli_z("Tim_12345")
+print(u.shrani("uporabniki/test.json"))
+#print([naloga.v_seznam() for naloga in u.naloge_po_dnevih_prihodnje()])
 
 '''
 u2 = Uporabnik.nalozi_stanje("test.json")
 print(u2.shrani("test2.json"))
+
+u2 = Uporabnik.nalozi_stanje("test.json")
+print(u2.seznam_projektov[0].deljeno_z)
 '''
+
+s = Seznam_uporabnikov('uporabniki')
+print(s.uporabniki)

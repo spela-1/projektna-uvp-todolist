@@ -1,0 +1,85 @@
+{
+    "ime": "Špela",
+    "zasifrirano_geslo": "Sc.1003067",
+    "seznam_projektov": [
+        {
+            "ime": "Tenis",
+            "naslednji_id": 2,
+            "seznam_nalog": [
+                {
+                    "tekst": "igra",
+                    "datum": [
+                        2020,
+                        7,
+                        21
+                    ],
+                    "ura": [
+                        16,
+                        0
+                    ],
+                    "opravljeno": false,
+                    "prioriteta": 5,
+                    "id": 0
+                },
+                {
+                    "tekst": "servis",
+                    "datum": [
+                        2020,
+                        8,
+                        14
+                    ],
+                    "ura": [
+                        16,
+                        0
+                    ],
+                    "opravljeno": false,
+                    "prioriteta": 4,
+                    "id": 1
+                }
+            ],
+            "id": 0,
+            "deljeno_z": [
+                "Tim_12345"
+            ]
+        },
+        {
+            "ime": "Izpit za avto",
+            "naslednji_id": 2,
+            "seznam_nalog": [
+                {
+                    "tekst": "1 ura",
+                    "datum": [
+                        2020,
+                        8,
+                        6
+                    ],
+                    "ura": [
+                        19,
+                        38
+                    ],
+                    "opravljeno": false,
+                    "prioriteta": 1,
+                    "id": 0
+                },
+                {
+                    "tekst": "glavna",
+                    "datum": [
+                        2020,
+                        8,
+                        6
+                    ],
+                    "ura": [
+                        20,
+                        0
+                    ],
+                    "opravljeno": false,
+                    "prioriteta": 3,
+                    "id": 1
+                }
+            ],
+            "id": 1,
+            "deljeno_z": []
+        }
+    ],
+    "naslednji_id_pr": 2
+}

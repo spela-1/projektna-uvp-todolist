@@ -101,7 +101,11 @@ class Uporabnik():
         self.ime = ime
         self.zasifrirano_geslo = geslo
         self.naslednji_id_pr = 0
+        self.kdo_je_delil = set()
     
+    def dodaj_delitelja(self, uporabnik):
+        self.kdo_je_delil.add(uporabnik)
+
     def shrani(self, ime_datoteke):
         nov = []
         for projekt in self.seznam_projektov:
@@ -110,7 +114,8 @@ class Uporabnik():
             'ime': self.ime,
             'zasifrirano_geslo': self.zasifrirano_geslo,
             'seznam_projektov': nov,
-            'naslednji_id_pr': self.naslednji_id_pr
+            'naslednji_id_pr': self.naslednji_id_pr,
+            'kdo_je_delil': list(self.kdo_je_delil)
         }
         with open(ime_datoteke, 'w',encoding="utf-8") as datoteka:
             json.dump(slovar, datoteka, ensure_ascii=False, indent=4)
@@ -154,6 +159,7 @@ class Uporabnik():
         ime = slovar['ime']
         naslednji_id_pr = slovar['naslednji_id_pr']
         zasifrirano_geslo = slovar['zasifrirano_geslo']
+        kdo_je_delil = set(slovar['kdo_je_delil'])
         uporabnik = cls(ime, zasifrirano_geslo)
         nov = []
         for pr_slovar in slovar['seznam_projektov']:
@@ -161,15 +167,21 @@ class Uporabnik():
             nov.append(projekt)
         uporabnik.seznam_projektov = nov
         uporabnik.naslednji_id_pr = naslednji_id_pr
+        uporabnik.kdo_je_delil = kdo_je_delil
         return uporabnik
 
 
 class Seznam_uporabnikov():
     def __init__(self, mapa):
+        self.mapa = mapa
         if not os.path.isdir(mapa):
             os.mkdir(mapa)
         
         self.uporabniki = self.nalozi_uporabnike(mapa)
+    
+    def dodaj_uporabnika(self, ime, geslo):
+        if ime not in self.uporabniki:
+            self.uporabniki[ime] = Uporabnik(ime, geslo)
 
     def nalozi_uporabnike(self, mapa):
         uporabniki = {}
@@ -178,6 +190,31 @@ class Seznam_uporabnikov():
             uporabniki[uporabnik.ime] = uporabnik
 
         return uporabniki
+    
+    def deljeni_projekti(self, ime):
+        projekti = []
+        for uporabnik in self.uporabniki[ime].kdo_je_delil:
+            for projekt in self.uporabniki[uporabnik].seznam_projektov:
+                if ime in projekt.deljeno_z:
+                    projekti.append(projekt)
+        return projekti
+
+
+    def deli_projekt(self, kdo_deli, id_projekta, komu_deli):
+        if komu_deli not in self.uporabniki:
+            return 
+        
+        for projekt in self.uporabniki[kdo_deli].seznam_projektov:
+            if projekt.id == id_projekta:
+                projekt.deli_z(komu_deli)
+                break
+        self.uporabniki[komu_deli].dodaj_delitelja(kdo_deli)
+
+    def shrani_uporabnika(self, ime):
+        self.uporabniki[ime].shrani(os.path.join(self.mapa, ime + ".json"))
+        
+
+
             
 
             
@@ -187,16 +224,19 @@ class Seznam_uporabnikov():
 
 
 
+s = Seznam_uporabnikov('uporabniki')
 
-u = Uporabnik("Špela", "Sc.1003067")
-u.nov_projekt("Tenis")
-u.seznam_projektov[0].nova_naloga("igra", [2020,7,21], [16, 0], 5)
-u.nov_projekt("Izpit za avto")
-u.seznam_projektov[1].nova_naloga("1 ura", [2020,8,6], [19, 38], 1)
-u.seznam_projektov[1].nova_naloga("glavna", [2020,8,6], [20, 0], 3)
-u.seznam_projektov[0].nova_naloga("servis", [2020,8, 14], [16, 0], 4)
-u.seznam_projektov[0].deli_z("Tim_12345")
-print(u.shrani("uporabniki/test.json"))
+s.dodaj_uporabnika("Špela", "Sc.1003067")
+s.dodaj_uporabnika("Tim1234", "tk")
+s.uporabniki["Špela"].nov_projekt("Tenis")
+s.uporabniki["Špela"].seznam_projektov[0].nova_naloga("igra", [2020,7,21], [16, 0], 5)
+s.uporabniki["Špela"].nov_projekt("Izpit za avto")
+s.uporabniki["Špela"].seznam_projektov[1].nova_naloga("1 ura", [2020,8,6], [19, 38], 1)
+s.uporabniki["Špela"].seznam_projektov[1].nova_naloga("glavna", [2020,8,6], [20, 0], 3)
+s.uporabniki["Špela"].seznam_projektov[0].nova_naloga("servis", [2020,8, 14], [16, 0], 4)
+s.deli_projekt("Špela", 0, "Tim1234")
+s.shrani_uporabnika("Špela")
+s.shrani_uporabnika("Tim1234")
 #print([naloga.v_seznam() for naloga in u.naloge_po_dnevih_prihodnje()])
 
 '''
@@ -207,5 +247,6 @@ u2 = Uporabnik.nalozi_stanje("test.json")
 print(u2.seznam_projektov[0].deljeno_z)
 '''
 
-s = Seznam_uporabnikov('uporabniki')
-print(s.uporabniki)
+s2 = Seznam_uporabnikov('uporabniki')
+d = s2.deljeni_projekti("Tim1234")
+print(len(d), d[0].ime)

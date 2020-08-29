@@ -1,0 +1,131 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css"
+        integrity="sha384-JcKb8q3iqJ61gNV9KGb8thSsNjpSL0n8PARn9HuZOnIxN0hoP+VmmDGMN5t9UJ0Z" crossorigin="anonymous">
+    <title>Document</title>
+
+    <style>
+        .ob-straneh {
+            display: flex;
+            flex-direction: row;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .card-text {
+            margin-bottom: 0;
+        }
+
+        .card {
+            margin-top: 1em;
+        }
+
+
+        .gumb-odjava {
+            position: absolute;
+            top: 1em;
+            right: 2em;
+        }
+
+        .gumb-nazaj {
+            position: absolute;
+            top: 1em;
+            left: 2em;
+        }
+
+        form.card {
+            margin-top: 2em;
+            margin-bottom: 2em;
+            padding: 1em;
+        }
+
+        form h3 {
+            margin-bottom: 0.5em;
+            font-weight: normal;
+        }
+        .sredina {
+            margin-left: auto;
+            margin-right: auto;
+        }
+
+        .pod-naslovom {
+            margin-top: 1em;
+            margin-bottom: 1em;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="text-center container">
+        <a href="/odjava" class="btn btn-outline-primary btn-sm gumb-odjava">Odjava</a>
+        <a href="/projekti" class="btn btn-outline-primary btn-sm gumb-nazaj">Vsi projekti</a>
+        <h1>Tenis</h1>
+        <div class="pod-naslovom ob-straneh text-muted">
+            <div>
+                <em>Deljeno z:</em> Tim1234, oseba2
+            </div>
+            <form class="form-inline form-small align-items-center text-center" action="/deli">
+                <div class="sredina">
+                    <input type="text" class="form-control" id="oseba" name="oseba" placeholder="deli z osebo">
+                    <button type="submit" class="btn btn-outline-primary">+</button>
+                </div>
+            </form>
+        </div>
+        <div class="">
+            <div class="card">
+                <div class="card-body ob-straneh">
+                    <h5 class="card-title">Tenis</h5>
+                    <a href="#" class="btn btn-outline-primary">&#10003;</a>
+                </div>
+                <div class="card-footer text-muted ob-straneh">
+                    <span><em>30.8.2020</em> 1:00</span>
+                    <span><em>Prioriteta:</em> 5</span>
+                </div>
+            </div>
+
+            <div class="card">
+                <div class="card-body ob-straneh">
+                    <h5 class="card-title">Tenis</h5>
+                    <a href="#" class="btn btn-primary">&#10003;</a>
+                </div>
+                <div class="card-footer text-muted ob-straneh">
+                    <span><em>30.8.2020</em> 9:00</span>
+                    <span><em>Prioriteta:</em> 3</span>
+                </div>
+            </div>
+        </div>
+
+        <form class="text-left card" action="/nova-naloga">
+            <h3>Nova naloga</h3>
+            <div class="form-group">
+                <input type="text" class="form-control" id="ime" name="ime" placeholder="naloga">
+            </div>
+            <div class="form-group">
+                <label for="datum">Datum</label>
+                <input type="date" class="form-control" id="datum" name="datum">
+            </div>
+            <div class="form-group">
+                <label for="ura">Ura</label>
+                <input type="time" class="form-control" id="ura" name="ura">
+            </div>
+            <div class="form-group">
+                <label for="prioriteta">Prioriteta</label>
+                <select class="form-control" id="prioriteta" name="prioriteta">
+                    <option>0</option>
+                    <option>1</option>
+                    <option>2</option>
+                    <option>3</option>
+                    <option>4</option>
+                    <option>5</option>
+                </select>
+            </div>
+            <button type="submit" class="btn btn-primary">Dodaj</button>
+        </form>
+    </div>
+</body>
+
+</html>

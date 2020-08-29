@@ -1,26 +1,32 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" integrity="sha384-JcKb8q3iqJ61gNV9KGb8thSsNjpSL0n8PARn9HuZOnIxN0hoP+VmmDGMN5t9UJ0Z" crossorigin="anonymous">
-    <title>ToDo</title>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css"
+    integrity="sha384-JcKb8q3iqJ61gNV9KGb8thSsNjpSL0n8PARn9HuZOnIxN0hoP+VmmDGMN5t9UJ0Z" crossorigin="anonymous">
+  <title>ToDo</title>
 </head>
+
 <body>
-    <div class="text-center  container">
-        <h1>Prijava</h1>
-        <form>
-        <div class="form-group">
-          <label for="username">Uporabniško ime</label>
-          <input type="text" class="form-control" id="username">
-        </div>
-        <div class="form-group">
-          <label for="geslo">Password</label>
-          <input type="password" class="form-control" id="geslo">
-        </div>
-        <button type="submit" class="btn btn-primary">Prijava</button>
-      </form>
-    </div>
-    
+  <div class="text-center  container">
+    <h1>Prijava</h1>
+    <form action="/prijava" method="POST">
+      <div class="form-group">
+        <label for="username">Uporabniško ime</label>
+        <input type="text" class="form-control" id="username">
+      </div>
+      <div class="form-group">
+        <label for="geslo">Password</label>
+        <input type="password" class="form-control" id="geslo">
+      </div>
+      <button type="submit" class="btn btn-primary">Prijava</button>
+      <br>
+      <a href="/sign-up">Ustvari nov računa</a>
+    </form>
+  </div>
+
 </body>
+
 </html>

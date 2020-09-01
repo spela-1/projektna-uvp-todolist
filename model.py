@@ -2,8 +2,9 @@ import json
 import datetime
 import os
 
+
 class Naloga():
-    def __init__(self, id, id_pr, tekst, datum=None , ura=None, prioriteta=None):
+    def __init__(self, id, id_pr, tekst, datum=None, ura=None, prioriteta=None):
         self.tekst = tekst
         self.datum = datum
         self.ura = ura
@@ -11,7 +12,7 @@ class Naloga():
         self.prioriteta = prioriteta
         self.id = id
         self.id_pr = id_pr
-    
+
     def v_seznam(self):
         slovar = {
             'tekst': self.tekst,
@@ -32,8 +33,8 @@ class Naloga():
         prioriteta = nal_slovar['prioriteta']
         id = nal_slovar['id']
         naloga = cls(id, id_pr, tekst, datum, ura, prioriteta)
-        naloga.opravljeno = opravljeno  
-        return naloga   
+        naloga.opravljeno = opravljeno
+        return naloga
 
 
 class Projekt():
@@ -43,9 +44,10 @@ class Projekt():
         self.naslednji_id = 0
         self.id = id
         self.deljeno_z = set()
-    
-    def nova_naloga(self, tekst, datum=None , ura=None, prioriteta=None):
-        naloga = Naloga(self.naslednji_id, self.id, tekst, datum, ura, prioriteta)
+
+    def nova_naloga(self, tekst, datum=None, ura=None, prioriteta=None):
+        naloga = Naloga(self.naslednji_id, self.id,
+                        tekst, datum, ura, prioriteta)
         self.seznam_nalog.append(naloga)
         self.naslednji_id += 1
 
@@ -54,7 +56,7 @@ class Projekt():
             if naloga.id == id:
                 self.seznam_nalog.remove(naloga)
                 break
-    
+
     def deli_z(self, uporabnik):
         self.deljeno_z.add(uporabnik)
 
@@ -71,7 +73,7 @@ class Projekt():
             'seznam_nalog': nov,
             'id': self.id,
             'deljeno_z': list(self.deljeno_z)
-            }
+        }
         return slovar
 
     @classmethod
@@ -90,9 +92,6 @@ class Projekt():
         projekt.naslednji_id = naslednji_id
         projekt.deljeno_z = deljeno_z
         return projekt
-        
-
-
 
 
 class Uporabnik():
@@ -102,7 +101,7 @@ class Uporabnik():
         self.zasifrirano_geslo = geslo
         self.naslednji_id_pr = 0
         self.kdo_je_delil = set()
-    
+
     def dodaj_delitelja(self, uporabnik):
         self.kdo_je_delil.add(uporabnik)
 
@@ -117,14 +116,13 @@ class Uporabnik():
             'naslednji_id_pr': self.naslednji_id_pr,
             'kdo_je_delil': list(self.kdo_je_delil)
         }
-        with open(ime_datoteke, 'w',encoding="utf-8") as datoteka:
+        with open(ime_datoteke, 'w', encoding="utf-8") as datoteka:
             json.dump(slovar, datoteka, ensure_ascii=False, indent=4)
-
 
     def nov_projekt(self, ime):
         for projekt in self.seznam_projektov:
             if projekt.ime == ime:
-                return 'error'   
+                return 'error'
         projekt = Projekt(self.naslednji_id_pr, ime)
         self.seznam_projektov.append(projekt)
         self.naslednji_id_pr += 1
@@ -133,8 +131,8 @@ class Uporabnik():
         for projekt in self.seznam_projektov:
             if projekt.ime == ime:
                 self.seznam_projektov.remove(projekt)
-                break 
-    
+                break
+
     def naloge_po_dnevih(self):
         naloge = []
         for projekt in self.seznam_projektov:
@@ -143,15 +141,15 @@ class Uporabnik():
         naloge.sort(key=lambda naloga: naloga.datum + naloga.ura)
         return naloge
 
-    def naloge_po_dnevih_prihodnje(self):
+    def naloge_danes(self):
         naloge = self.naloge_po_dnevih()
-        danes = [datetime.datetime.now().year, datetime.datetime.now().month, datetime.datetime.now().day]
-        prihodnje_naloge = [naloga for naloga in naloge if naloga.datum >= danes]
-        
+        danes = [datetime.datetime.now().year, datetime.datetime.now().month,
+                 datetime.datetime.now().day]
+        prihodnje_naloge = [
+            naloga for naloga in naloge if naloga.datum == danes]
+
         return prihodnje_naloge
-        
-        
-    
+
     @classmethod
     def nalozi_stanje(cls, ime_datoteke):
         with open(ime_datoteke, encoding='utf-8') as datoteka:
@@ -171,39 +169,44 @@ class Uporabnik():
         return uporabnik
 
 
-class Seznam_uporabnikov():
+class SeznamUporabnikov():
     def __init__(self, mapa):
         self.mapa = mapa
         if not os.path.isdir(mapa):
             os.mkdir(mapa)
-        
+
         self.uporabniki = self.nalozi_uporabnike(mapa)
-    
+
     def dodaj_uporabnika(self, ime, geslo):
-        if ime not in self.uporabniki:
+        if len(ime) > 0 and len(geslo) > 0 and (ime not in self.uporabniki):
             self.uporabniki[ime] = Uporabnik(ime, geslo)
+            return self.uporabniki[ime]
+        else:
+            return None
 
     def nalozi_uporabnike(self, mapa):
         uporabniki = {}
         for ime_datoteke in os.listdir(mapa):
-            uporabnik = Uporabnik.nalozi_stanje(os.path.join(mapa, ime_datoteke))
+            uporabnik = Uporabnik.nalozi_stanje(
+                os.path.join(mapa, ime_datoteke))
             uporabniki[uporabnik.ime] = uporabnik
 
         return uporabniki
-    
+
     def deljeni_projekti(self, ime):
         projekti = []
+        imena_uporabnikov = []
         for uporabnik in self.uporabniki[ime].kdo_je_delil:
             for projekt in self.uporabniki[uporabnik].seznam_projektov:
                 if ime in projekt.deljeno_z:
                     projekti.append(projekt)
-        return projekti
-
+                    imena_uporabnikov.append(uporabnik)
+        return projekti, imena_uporabnikov
 
     def deli_projekt(self, kdo_deli, id_projekta, komu_deli):
         if komu_deli not in self.uporabniki:
-            return 
-        
+            return
+
         for projekt in self.uporabniki[kdo_deli].seznam_projektov:
             if projekt.id == id_projekta:
                 projekt.deli_z(komu_deli)
@@ -212,4 +215,3 @@ class Seznam_uporabnikov():
 
     def shrani_uporabnika(self, ime):
         self.uporabniki[ime].shrani(os.path.join(self.mapa, ime + ".json"))
-        

@@ -1,4 +1,6 @@
 # ToDo
+Repozitorij za projekt pri predmetu Uvod v programiranje
+
 ## Zagon programa
 Zažene se datoteko `todo.py`. V terminalu se potem izpiše url naslov, na katerem je dostopen spletni vmesnik.
 
